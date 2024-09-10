@@ -26,7 +26,7 @@ pub fn get_file(path_as_str: &str) {
     }
 }
 
-pub fn is_zip_file(mut file: std::fs::File) -> std::io::Result<bool> {
+pub fn is_zip_file(mut file: &std::fs::File) -> std::io::Result<bool> {
     let zip_signature: [u8; 4] = [0x50, 0x4B, 0x03, 0x04];
 
     let mut buffer: [u8; 4] = [0; 4];
