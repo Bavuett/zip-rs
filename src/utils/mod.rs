@@ -1,5 +1,6 @@
+use std::fs::{read, File};
 // Utilities module inside folder src/utils
-use std::io::Read;
+use std::io::{BufReader, Bytes, Read};
 use std::path::Path;
 
 pub fn get_file(path_as_str: &str) {
@@ -26,7 +27,7 @@ pub fn get_file(path_as_str: &str) {
     }
 }
 
-pub fn is_zip_file(mut file: &std::fs::File) -> std::io::Result<bool> {
+pub fn is_zip_file(file: &mut BufReader<File>) -> std::io::Result<bool> {
     let zip_signature: [u8; 4] = [0x50, 0x4B, 0x03, 0x04];
 
     let mut buffer: [u8; 4] = [0; 4];
@@ -42,4 +43,17 @@ pub fn is_zip_file(mut file: &std::fs::File) -> std::io::Result<bool> {
     }
 
     Ok(false)
+}
+
+pub fn get_local_file_headers_offsets(file: &mut std::fs::File) -> Result<Vec<u8>, std::io::Error> {
+    let local_file_headers_offsets: Vec<u8> = Vec::from([0]);
+
+    let file_bytes: Bytes<&mut File> = file.bytes();
+    let mut buffer: [u8; 8] = [0; 8];
+    let bytes_read = match file.read(&mut buffer) {
+        Ok(result) => result,
+        Err(error) => return Err(error),
+    };
+    
+    Ok(local_file_headers_offsets)
 }
