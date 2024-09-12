@@ -25,19 +25,12 @@ impl Archive {
             ));
         }
 
-        let position = match file.seek(SeekFrom::Start(6)) {
-            Ok(result) => result,
-            Err(error) => return Err(error),
-        };
-
         let size: u64 = match file.seek(SeekFrom::End(0)) {
             Ok(result) => result,
             Err(error) => return Err(error),
         };
 
         file.read(&mut buffer).expect("Error!");
-
-        println!("Reading from position {}: {:?}", position, buffer);
 
         let local_file_headers_offsets = get_local_file_headers_offsets(&mut file, size).expect("Could not get Headers!");
 
