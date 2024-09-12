@@ -1,6 +1,5 @@
 use std::fs::{read, File};
-// Utilities module inside folder src/utils
-use std::io::{BufReader, Bytes, Read};
+use std::io::{BufReader, Bytes, Read, Seek, SeekFrom};
 use std::path::Path;
 
 pub fn get_file(path_as_str: &str) {
@@ -45,15 +44,74 @@ pub fn is_zip_file(file: &mut BufReader<File>) -> std::io::Result<bool> {
     Ok(false)
 }
 
-pub fn get_local_file_headers_offsets(file: &mut std::fs::File) -> Result<Vec<u8>, std::io::Error> {
-    let local_file_headers_offsets: Vec<u8> = Vec::from([0]);
+pub fn get_local_file_headers_offsets(
+    file: &mut BufReader<File>,
+    size: u64,
+) -> Result<Vec<u64>, std::io::Error> {
+    let mut local_file_headers_offsets: Vec<u64> = Vec::new();
+    let mut buffer: [u8; 256] = [0; 256];
+    let mut counter: u64 = 0;
 
-    let file_bytes: Bytes<&mut File> = file.bytes();
-    let mut buffer: [u8; 8] = [0; 8];
-    let bytes_read = match file.read(&mut buffer) {
-        Ok(result) => result,
+    _ = match file.seek(SeekFrom::Start(0)) {
+        Ok(_) => (),
         Err(error) => return Err(error),
     };
-    
+
+    while counter < size {
+        let mut check_vec: Vec<u8> = Vec::new();
+        _ = match file.read(&mut buffer) {
+            Ok(result) => result,
+            Err(error) => return Err(error),
+        };
+
+        println!("Current buffer: {:?}", buffer);
+
+        for i in 0..buffer.len() {
+            match buffer[i] {
+                0x50 => {
+                    check_vec.push(buffer[i]);
+                }
+                0x4B => {
+                    if check_vec == [0x50] {
+                        check_vec.push(0x4B);
+                    } else {
+                        check_vec.clear();
+                    }
+                }
+                0x03 => {
+                    if check_vec == [0x50, 0x4B] {
+                        check_vec.push(0x03);
+                    } else {
+                        check_vec.clear();
+                    }
+                }
+                0x04 => {
+                    if check_vec == [0x50, 0x4B, 0x03] {
+                        check_vec.push(0x04);
+                    } else {
+                        check_vec.clear();
+                    }
+                }
+                _ => check_vec.clear(),
+            }
+
+            if check_vec == [0x50, 0x4B, 0x03, 0x04] {
+                let index_as_u64: u64 = match i.try_into() {
+                    Ok(result) => result,
+                    Err(_) => {
+                        return Err(std::io::Error::new(
+                            std::io::ErrorKind::InvalidData,
+                            "Could not convert",
+                        ))
+                    },
+                };
+                
+                local_file_headers_offsets.push(index_as_u64 - 3)
+            }
+        }
+
+        counter += 256;
+    }
+
     Ok(local_file_headers_offsets)
 }

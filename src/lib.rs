@@ -19,13 +19,11 @@ mod tests {
         
         let archive: Archive = Archive::open("/home/bavuett/Zip Files/archive2.zip").expect("Error!");
 
-        let is_zip = match is_zip_file(&mut file) {
+        let is_zip: bool = match is_zip_file(&mut file) {
             Ok(result) => result,
             Err(error) => panic!("{:?}", error),
         };
 
         println!("\nName: {} - Is ZIP: {}", archive.name, is_zip);
-
-        
     }
 }

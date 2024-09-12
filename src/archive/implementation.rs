@@ -1,19 +1,17 @@
-use crate::{archive::Archive, utils::is_zip_file};
+use crate::{archive::Archive, utils::{get_local_file_headers_offsets, is_zip_file}};
 
 use std::io::{BufReader, Read, Seek, SeekFrom};
 
 impl Archive {
     pub fn open(archive_path: &str) -> Result<Self, std::io::Error> {
-        let mut buffer: [u8; 8] = [0; 8];
-
-        let local_file_headers_offsets: Vec<u8> = Vec::from([0]);
+        let mut buffer: [u8; 256] = [0; 256];
 
         let file_ref: std::fs::File = match std::fs::File::open(archive_path) {
             Ok(result) => result,
             Err(error) => return Err(error),
         };
 
-        let mut file = BufReader::new(file_ref);
+        let mut file: BufReader<std::fs::File> = BufReader::new(file_ref);
 
         let is_zip: bool = match is_zip_file(&mut file) {
             Ok(result) => result,
@@ -27,7 +25,12 @@ impl Archive {
             ));
         }
 
-        let position: u64 = match file.seek(SeekFrom::Start(6)) {
+        let position = match file.seek(SeekFrom::Start(6)) {
+            Ok(result) => result,
+            Err(error) => return Err(error),
+        };
+
+        let size: u64 = match file.seek(SeekFrom::End(0)) {
             Ok(result) => result,
             Err(error) => return Err(error),
         };
@@ -35,6 +38,10 @@ impl Archive {
         file.read(&mut buffer).expect("Error!");
 
         println!("Reading from position {}: {:?}", position, buffer);
+
+        let local_file_headers_offsets = get_local_file_headers_offsets(&mut file, size).expect("Could not get Headers!");
+
+        println!("Local File Headers: {:?}", local_file_headers_offsets);
 
         Ok(Archive {
             file,
