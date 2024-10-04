@@ -17,7 +17,7 @@ mod tests {
 
         let mut file: BufReader<std::fs::File> = BufReader::new(file_ref);
         
-        let archive: Archive = Archive::open("/home/bavuett/Zip Files/archive3.zip").expect("Error!");
+        let archive: Archive = Archive::open("/home/bavuett/Zip Files/archive2.zip").expect("Error!");
 
         let is_zip: bool = match is_zip_file(&mut file) {
             Ok(result) => result,

@@ -32,10 +32,9 @@ impl Archive {
 
         file.read(&mut buffer).expect("Error!");
 
-        let local_file_headers_offsets = get_local_file_headers_offsets(&mut file, size).expect("Could not get Headers!");
+        let local_file_headers_offsets: Vec<usize> = get_local_file_headers_offsets(&mut file, size).expect("Could not get Headers!");
 
         println!("Local File Headers: {:?}", local_file_headers_offsets);
-
         Ok(Archive {
             file,
             name: String::from("Hello, World!"),

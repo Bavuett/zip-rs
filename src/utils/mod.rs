@@ -47,18 +47,19 @@ pub fn is_zip_file(file: &mut BufReader<File>) -> std::io::Result<bool> {
 pub fn get_local_file_headers_offsets(
     file: &mut BufReader<File>,
     size: u64,
-) -> Result<Vec<u64>, std::io::Error> {
-    let mut local_file_headers_offsets: Vec<u64> = Vec::new();
+) -> Result<Vec<usize>, std::io::Error> {
+    let mut local_file_headers_offsets: Vec<usize> = Vec::new();
+    let mut check_vec: Vec<u8> = Vec::new();
+
     let mut buffer: [u8; 256] = [0; 256];
-    let mut counter: u64 = 0;
+    let mut counter: usize = 0;
 
     _ = match file.seek(SeekFrom::Start(0)) {
         Ok(_) => (),
         Err(error) => return Err(error),
     };
 
-    while counter < size {
-        let mut check_vec: Vec<u8> = Vec::new();
+    while counter < size as usize {
         _ = match file.read(&mut buffer) {
             Ok(result) => result,
             Err(error) => return Err(error),
@@ -69,7 +70,8 @@ pub fn get_local_file_headers_offsets(
         for i in 0..buffer.len() {
             match buffer[i] {
                 0x50 => {
-                    check_vec.push(buffer[i]);
+                    check_vec.clear();
+                    check_vec.push(0x50);
                 }
                 0x4B => {
                     if check_vec == [0x50] {
@@ -96,7 +98,7 @@ pub fn get_local_file_headers_offsets(
             }
 
             if check_vec == [0x50, 0x4B, 0x03, 0x04] {
-                let index_as_u64: u64 = match i.try_into() {
+                let index_as_usize: usize = match i.try_into() {
                     Ok(result) => result,
                     Err(_) => {
                         return Err(std::io::Error::new(
@@ -106,11 +108,11 @@ pub fn get_local_file_headers_offsets(
                     },
                 };
                 
-                local_file_headers_offsets.push(index_as_u64 - 3)
+                local_file_headers_offsets.push((index_as_usize - 3) + counter)
             }
         }
 
-        counter += 256;
+        counter += buffer.len();
     }
 
     Ok(local_file_headers_offsets)
