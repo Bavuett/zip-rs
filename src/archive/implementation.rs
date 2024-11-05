@@ -1,4 +1,7 @@
-use crate::{archive::Archive, utils::{get_local_file_headers_offsets, is_zip_file}};
+use crate::{
+    archive::Archive, factories::local_file_headers_offsets_factory::LocalFileHeadersOffsetsFactory,
+    utils::is_zip_file,
+};
 
 use std::io::{BufReader, Read, Seek, SeekFrom};
 
@@ -32,7 +35,8 @@ impl Archive {
 
         file.read(&mut buffer).expect("Error!");
 
-        let local_file_headers_offsets: Vec<usize> = get_local_file_headers_offsets(&mut file, size).expect("Could not get Headers!");
+        let local_file_headers_offsets: Vec<usize> =
+            LocalFileHeadersOffsetsFactory::from(&mut file, size).expect("Could not get Headers!");
 
         println!("Local File Headers: {:?}", local_file_headers_offsets);
         Ok(Archive {

@@ -1,9 +1,10 @@
 pub mod utils;
 pub mod archive;
+pub mod factories;
 
 #[cfg(test)]
 mod tests {
-    use std::io::{BufRead, BufReader};
+    use std::io::BufReader;
 
     use super::utils::is_zip_file;
     use super::archive::Archive;

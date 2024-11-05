@@ -1,6 +1,7 @@
 use std::{fs::File, io::BufReader};
 
 mod implementation;
+mod entry;
 pub mod flags;
 
 pub struct Archive {
