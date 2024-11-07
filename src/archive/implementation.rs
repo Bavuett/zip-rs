@@ -1,5 +1,9 @@
 use crate::{
-    archive::Archive, factories::local_file_headers_offsets_factory::LocalFileHeadersOffsetsFactory,
+    archive::{entry::Entry, Archive},
+    factories::{
+        entries_factory::EntriesFactory,
+        local_file_headers_offsets_factory::LocalFileHeadersOffsetsFactory,
+    },
     utils::is_zip_file,
 };
 
@@ -15,6 +19,8 @@ impl Archive {
         };
 
         let mut file: BufReader<std::fs::File> = BufReader::new(file_ref);
+
+        let mut entries: Vec<Entry> = Vec::new();
 
         let is_zip: bool = match is_zip_file(&mut file) {
             Ok(result) => result,
@@ -35,13 +41,44 @@ impl Archive {
 
         file.read(&mut buffer).expect("Error!");
 
-        let local_file_headers_offsets: Vec<usize> =
-            LocalFileHeadersOffsetsFactory::from(&mut file, size).expect("Could not get Headers!");
+        let local_file_headers_offsets: Vec<usize> = LocalFileHeadersOffsetsFactory::from(
+            &mut file, 
+            size
+        ).expect("Could not get Headers!");
 
         println!("Local File Headers: {:?}", local_file_headers_offsets);
-        Ok(Archive {
-            file,
-            name: String::from("Hello, World!"),
-        })
+
+        for &local_file_header_offset in &local_file_headers_offsets {
+            let offsets_as_iter_ref: &mut std::slice::Iter<'_, usize> = &mut local_file_headers_offsets.iter();
+            let index: usize = offsets_as_iter_ref.position(|&current_offset| current_offset == local_file_header_offset).unwrap();
+            let local_file_headers_offsets_length: usize = local_file_headers_offsets.len();
+
+            if index < local_file_headers_offsets_length - 1 {
+                println!(
+                    "Length: {}, Index: {}",
+                    local_file_headers_offsets.len(),
+                    index
+                );
+
+                let next_index: usize = if index < local_file_headers_offsets.len() - 1 {
+                    index + 1
+                } else {
+                    0
+                };
+
+                let entry: Entry = match EntriesFactory::from(
+                    &mut file,
+                    local_file_header_offset,
+                    local_file_headers_offsets[next_index],
+                ) {
+                    Ok(result) => result,
+                    Err(error) => return Err(error),
+                };
+
+                entries.push(entry);
+            }
+        }
+
+        Ok(Archive { file, entries })
     }
 }
