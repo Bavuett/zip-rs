@@ -1,4 +1,4 @@
-use crate::factories::local_file_headers_offsets_factory::LocalFileHeadersOffsetsFactory;
+use crate::factories::local_file_headers_offsets::LocalFileHeadersOffsetsFactory;
 
 use std::fs::File;
 use std::io::{BufReader, Read, Seek, SeekFrom};

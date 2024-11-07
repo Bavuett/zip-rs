@@ -1,6 +1,5 @@
 use crate::archive::{entry::Entry, flags::Flags};
-use crate::factories::entries_factory::EntriesFactory;
-use crate::utils::is_zip_file;
+use crate::factories::entries::EntriesFactory;
 
 use std::io::{BufReader, Read, Seek, SeekFrom};
 use std::fs::File;

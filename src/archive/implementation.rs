@@ -1,10 +1,10 @@
 use crate::{
     archive::{entry::Entry, Archive},
     factories::{
-        entries_factory::EntriesFactory,
-        local_file_headers_offsets_factory::LocalFileHeadersOffsetsFactory,
+        entries::EntriesFactory,
+        local_file_headers_offsets::LocalFileHeadersOffsetsFactory,
     },
-    utils::is_zip_file,
+    utils::validation::ValidationUtilities,
 };
 
 use std::io::{BufReader, Read, Seek, SeekFrom};
@@ -22,7 +22,7 @@ impl Archive {
 
         let mut entries: Vec<Entry> = Vec::new();
 
-        let is_zip: bool = match is_zip_file(&mut file) {
+        let is_zip: bool = match ValidationUtilities::is_zip_file(&mut file) {
             Ok(result) => result,
             Err(error) => return Err(error),
         };
