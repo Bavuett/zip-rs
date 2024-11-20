@@ -1,5 +1,6 @@
 use crate::archive::{entry::Entry, flags::Flags};
 use crate::factories::entries::EntriesFactory;
+use crate::utils::validation::ValidationUtilities;
 
 use std::io::{BufReader, Read, Seek, SeekFrom};
 use std::fs::File;
@@ -23,6 +24,13 @@ impl EntriesFactory {
         };
 
         println!("Buffer inside Entries Factory: {:?}", buffer);
+
+        if !ValidationUtilities::is_zip_entry(&buffer) {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                format!("Buffer starting at offset {} is not a valid Local File Header Offset", offset),
+            ))
+        } 
 
         Ok(Entry {
             offset,

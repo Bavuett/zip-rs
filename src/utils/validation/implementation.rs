@@ -21,7 +21,15 @@ impl ValidationUtilities {
         Ok(false)
     }
 
-    pub fn is_zip_entry(buffer: &Vec<u8>) -> std::io::Result<bool> {        
-        Ok(false)
+    pub fn is_zip_entry(buffer: &Vec<u8>) -> bool {    
+        if buffer.len() < 4 {
+            return false;
+        };
+        
+        if buffer[0..4] == ConstantValues::ZIP_SIGNATURE {
+            return true;
+        }
+
+        false
     }
 }
