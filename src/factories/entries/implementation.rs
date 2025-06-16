@@ -1,6 +1,7 @@
 use crate::archive::{entry::Entry, flags::Flags};
 use crate::factories::entries::EntriesFactory;
-use crate::utils::validation::ValidationUtilities;
+use crate::factories::flags::FlagsFactory;
+use crate::traits::validatable::Validatable;
 
 use std::io::{BufReader, Read, Seek, SeekFrom};
 use std::fs::File;
@@ -25,12 +26,14 @@ impl EntriesFactory {
 
         println!("Buffer inside Entries Factory: {:?}", buffer);
 
-        if !ValidationUtilities::is_zip_entry(&buffer) {
+        if !buffer.is_zip() {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidData,
-                format!("Buffer starting at offset {} is not a valid Local File Header Offset", offset),
-            ))
-        } 
+                format!("Buffer starting at offset {} is not a valid Local File Header Offset.", offset),
+            ));
+        };
+
+        _ = FlagsFactory::from(&buffer);
 
         Ok(Entry {
             offset,

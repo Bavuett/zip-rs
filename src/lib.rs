@@ -1,6 +1,7 @@
 pub mod utils;
 pub mod archive;
 pub mod factories;
+pub mod traits;
 
 #[cfg(test)]
 mod tests {
