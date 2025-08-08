@@ -1,6 +1,6 @@
 use crate::archive::{entry::Entry, flags::Flags};
 use crate::factories::{entries::EntriesFactory, flags::FlagsFactory};
-use crate::utils::validation::ValidationUtilities;
+use crate::traits::validatable::Validatable;
 
 use std::io::{BufReader, Read, Seek, SeekFrom};
 use std::fs::File;
