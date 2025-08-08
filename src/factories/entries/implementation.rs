@@ -25,7 +25,7 @@ impl EntriesFactory {
 
         println!("Buffer inside Entries Factory: {:?}", buffer);
 
-        if !ValidationUtilities::is_zip_entry(&buffer) {
+        if !buffer.is_zip() {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidData,
                 format!("Buffer starting at offset {} is not a valid Local File Header Offset", offset),
