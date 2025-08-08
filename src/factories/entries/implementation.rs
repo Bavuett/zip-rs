@@ -1,5 +1,5 @@
 use crate::archive::{entry::Entry, flags::Flags};
-use crate::factories::entries::EntriesFactory;
+use crate::factories::{entries::EntriesFactory, flags::FlagsFactory};
 use crate::utils::validation::ValidationUtilities;
 
 use std::io::{BufReader, Read, Seek, SeekFrom};
@@ -30,12 +30,20 @@ impl EntriesFactory {
                 std::io::ErrorKind::InvalidData,
                 format!("Buffer starting at offset {} is not a valid Local File Header Offset", offset),
             ))
-        } 
+        }
+
+        let flags: Flags = match FlagsFactory::from(&buffer) {
+            Ok(result) => result,
+            Err(_error ) => return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData, 
+                format!("Flags are not valid"),
+            ))
+        };
 
         Ok(Entry {
             offset,
             bytes: buffer,
-            flags: Flags::new(),
+            flags: flags,
         })
     }
 }

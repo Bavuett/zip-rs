@@ -54,8 +54,6 @@ impl LocalFileHeadersOffsetsFactory {
                     _ => check_vec.clear(),
                 }
 
-                
-    
                 if check_vec == [0x50, 0x4B, 0x03, 0x04] {
                     let index_as_usize: usize = match i.try_into() {
                         Ok(result) => result,
