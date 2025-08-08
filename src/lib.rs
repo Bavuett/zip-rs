@@ -8,6 +8,6 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let archive: Archive = Archive::open("/home/bavuett/Zip Files/archive3.zip").expect("Error!");
+        let archive: Archive = Archive::open("C:\\Users\\loren\\Documents\\text.zip").expect("Error!");
     }
 }
