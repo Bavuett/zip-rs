@@ -1,5 +1,3 @@
-use std::path::MAIN_SEPARATOR;
-
 use crate::{archive::flags::Flags, utils::constants::ConstantValues};
 
 impl Flags {
