@@ -3,17 +3,20 @@ use crate::factories::flags::FlagsFactory;
 
 impl FlagsFactory {
     pub fn from(buffer: &Vec<u8>) -> Result<Flags, std::io::Error> {
-        let flags_as_binary_string: String = format!("{:016b}", buffer[4]);
-        let flags_as_binary_chars: std::str::Chars<'_> = flags_as_binary_string.chars();
+        let mut flags: Flags =  Flags::new();
 
-        println!("Flags as Byte in String: {:?}", flags_as_binary_string);
-        println!("Flags as Byte in Chars: {:?}", flags_as_binary_chars);
+        flags.set_encrypted(&buffer);
+        flags.set_central_directory_encryption(&buffer);
+        flags.set_improved_compression(&buffer);
+        flags.set_values_in_data_descriptor(&buffer);
+        flags.set_enhanced_deflation(&buffer);
+        flags.set_patched_data_compression(&buffer);
+        flags.set_strong_encryption(&buffer);
+        flags.set_utf8(&buffer);
+        flags.set_central_directory_encryption(&buffer);
 
-        let mut flags_as_binary: Vec<i8> = Vec::new();
-        
-        flags_as_binary_chars.for_each(|item: char| flags_as_binary.push(item as i8 - 48));
+        println!("These are the flags: {:?}", flags);
 
-        println!("Flags as Binary as i8: {:?}", flags_as_binary);
-        Ok(Flags::new())
+        Ok(flags)
     }
 }

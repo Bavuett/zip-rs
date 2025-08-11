@@ -1,5 +1,6 @@
 mod implementation;
 
+#[derive(Debug)]
 pub struct Flags {
     encrypted: bool,
     reduced_compression: bool,

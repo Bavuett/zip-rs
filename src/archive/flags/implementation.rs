@@ -20,7 +20,7 @@ impl Flags {
     }
 
     pub fn set_central_directory_encryption(&mut self, buffer: &Vec<u8>) -> () {
-        let raw_buffer: u16 = u16::from_le_bytes([buffer[0], buffer[1]]);
+        let raw_buffer: u16 = u16::from_le_bytes([buffer[6], buffer[7]]);
         self.central_directory_encryption = (raw_buffer & ConstantValues::FLAG_CENTRAL_DIRECTORY_ECNRYPTION) != 0;
     }
 
@@ -29,7 +29,7 @@ impl Flags {
     }
 
     pub fn set_encrypted(&mut self, buffer: &Vec<u8>) -> () {
-        let raw_buffer: u16 = u16::from_le_bytes([buffer[0], buffer[1]]);
+        let raw_buffer: u16 = u16::from_le_bytes([buffer[6], buffer[7]]);
         self.encrypted = (raw_buffer & ConstantValues::FLAG_ENCRYPTED) != 0;
     }
 
@@ -38,7 +38,7 @@ impl Flags {
     }
 
     pub fn set_reduced_compression(&mut self, buffer: &Vec<u8>) -> () {
-        let raw_buffer: u16 = u16::from_le_bytes([buffer[0], buffer[1]]);
+        let raw_buffer: u16 = u16::from_le_bytes([buffer[6], buffer[7]]);
         self.reduced_compression = (raw_buffer & ConstantValues::FLAG_REDUCED_COMPRESSION) != 0;
     }
 
@@ -47,7 +47,7 @@ impl Flags {
     }
 
     pub fn set_improved_compression(&mut self, buffer: &Vec<u8>) -> () {
-        let raw_buffer: u16 = u16::from_le_bytes([buffer[0], buffer[1]]);
+        let raw_buffer: u16 = u16::from_le_bytes([buffer[6], buffer[7]]);
         self.improved_compression = (raw_buffer & ConstantValues::FLAG_IMPROVED_COMPRESSION) != 0;
     }
 
@@ -56,7 +56,7 @@ impl Flags {
     }
 
     pub fn set_values_in_data_descriptor(&mut self, buffer: &Vec<u8>) -> () {
-        let raw_buffer: u16 = u16::from_le_bytes([buffer[0], buffer[1]]);
+        let raw_buffer: u16 = u16::from_le_bytes([buffer[6], buffer[7]]);
         self.values_in_data_descriptor = (raw_buffer & ConstantValues::FLAG_VALUES_IN_DATA_DESCRIPTOR) != 0;
     }
 
@@ -65,7 +65,7 @@ impl Flags {
     }
 
     pub fn set_enhanced_deflation(&mut self, buffer: &Vec<u8>) -> () {
-        let raw_buffer: u16 = u16::from_le_bytes([buffer[0], buffer[1]]);
+        let raw_buffer: u16 = u16::from_le_bytes([buffer[6], buffer[7]]);
         self.enhanced_deflation = (raw_buffer & ConstantValues::FLAG_ENHANCED_DEFLATION) != 0;
     }
 
@@ -74,7 +74,7 @@ impl Flags {
     }
 
     pub fn set_patched_data_compression(&mut self, buffer: &Vec<u8>) -> () {
-        let raw_buffer: u16 = u16::from_le_bytes([buffer[0], buffer[1]]);
+        let raw_buffer: u16 = u16::from_le_bytes([buffer[6], buffer[7]]);
         self.patched_data_compression = (raw_buffer & ConstantValues::FLAG_PATCHED_DATA_COMPRESSION) != 0;
     }
 
@@ -83,7 +83,7 @@ impl Flags {
     }
 
     pub fn set_strong_encryption(&mut self, buffer: &Vec<u8>) -> () {
-        let raw_buffer: u16 = u16::from_le_bytes([buffer[0], buffer[1]]);
+        let raw_buffer: u16 = u16::from_le_bytes([buffer[6], buffer[7]]);
         self.strong_encryption = (raw_buffer & ConstantValues::FLAG_STRONG_ENCRYPTION) != 0;
     }
 
@@ -92,7 +92,7 @@ impl Flags {
     }
 
     pub fn set_utf8(&mut self, buffer: &Vec<u8>) -> () {
-        let raw_buffer: u16 = u16::from_le_bytes([buffer[0], buffer[1]]);
+        let raw_buffer: u16 = u16::from_le_bytes([buffer[6], buffer[7]]);
         self.utf8 = (raw_buffer & ConstantValues::FLAG_UTF8) != 0;
     }
 }

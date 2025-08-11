@@ -36,7 +36,7 @@ impl EntriesFactory {
             Ok(result) => result,
             Err(_error ) => return Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidData, 
-                format!("Flags are not valid"),
+                format!("Could not determine flags."),
             ))
         };
 
