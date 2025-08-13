@@ -17,6 +17,43 @@ impl Flags {
         }
     }
 
+    pub fn as_u16_le(&self) -> u16 {
+        let flags_as_u16: u16;
+
+        let central_directory_encryption: u16 = 
+            if self.central_directory_encryption { ConstantValues::FLAG_CENTRAL_DIRECTORY_ENCRYPTION } else { 0 };
+        let encrypted: u16 = 
+            if self.encrypted { ConstantValues::FLAG_ENCRYPTED } else { 0 };
+        let reduced_compression: u16 =
+            if self.reduced_compression { ConstantValues::FLAG_REDUCED_COMPRESSION } else { 0 };
+        let improved_compression: u16 = 
+            if self.improved_compression { ConstantValues::FLAG_IMPROVED_COMPRESSION } else { 0 };
+        let values_in_data_descriptor: u16 = 
+            if self.values_in_data_descriptor { ConstantValues::FLAG_VALUES_IN_DATA_DESCRIPTOR } else { 0 };
+        let enhanced_deflation: u16 =
+            if self.enhanced_deflation { ConstantValues::FLAG_ENHANCED_DEFLATION } else { 0 };
+        let patched_data_compression: u16 =
+            if self.patched_data_compression { ConstantValues::FLAG_PATCHED_DATA_COMPRESSION } else { 0 };
+        let strong_encryption: u16 = 
+            if self.strong_encryption { ConstantValues::FLAG_STRONG_ENCRYPTION } else { 0 };
+        let utf8: u16 = 
+            if self.utf8 { ConstantValues::FLAG_UTF8 } else { 0 };
+        
+
+        flags_as_u16 = 
+            central_directory_encryption + 
+            encrypted + 
+            reduced_compression + 
+            improved_compression + 
+            values_in_data_descriptor + 
+            enhanced_deflation + 
+            patched_data_compression +
+            strong_encryption + 
+            utf8;
+        
+        flags_as_u16
+    }
+
     pub fn central_directory_encryption(&self) -> bool {
         self.central_directory_encryption
     }

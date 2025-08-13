@@ -14,7 +14,10 @@ impl FlagsFactory {
         flags.set_strong_encryption(&buffer)?;
         flags.set_utf8(&buffer)?;
 
-        println!("These are the flags: {:?}", flags);
+        println!(
+            "Flags as u16: [{:?}], which equals to Bytes: [{:?}].\nAs Data Structure: [{:?}]", 
+            flags.as_u16_le(), format!("{:016b}", flags.as_u16_le()), flags
+        );
 
         Ok(flags)
     }
