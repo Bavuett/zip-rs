@@ -5,7 +5,7 @@ pub mod traits;
 
 #[cfg(test)]
 mod tests {
-    use super::archive::Archive;
+    use crate::{archive::flags::Flags, factories::flags::FlagsFactory};
 
     const BUFFER_AS_ARR: [u8; 256] = 
         [
@@ -40,9 +40,22 @@ mod tests {
     fn vec_is_not_zip() {
         use crate::traits::validatable::Validatable;
 
-        let mut buffer: Vec<u8> =  BUFFER_AS_ARR.to_vec();
+        let mut buffer: Vec<u8> = BUFFER_AS_ARR.to_vec();
         buffer[0] = 1;
 
         assert_ne!(buffer.is_zip(), true);
+    }
+
+    #[test]
+    /* 
+     * Using this buffer, only bit 3 should be toggled to 1. When expressed in u16, this should equal to 8 (2^3 = 8).
+     * For context, about the ZIP General Purpose Bit Flags, see the PK ZIP Specification (APPNOTE.txt), which can be found at
+     * https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
+     */
+    fn flags_factory() {
+        let buffer: Vec<u8> = BUFFER_AS_ARR.to_vec();
+        let flags: Flags = FlagsFactory::from(&buffer).expect("Could not generate flags");
+
+        assert_eq!(flags.as_u16_le(), 8);
     }
 }
