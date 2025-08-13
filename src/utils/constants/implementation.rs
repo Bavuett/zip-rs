@@ -11,5 +11,5 @@ impl ConstantValues {
     pub const FLAG_PATCHED_DATA_COMPRESSION: u16        = 0b0000_0000_0010_0000; // Bit 5 toggled.
     pub const FLAG_STRONG_ENCRYPTION: u16               = 0b0000_0000_0100_0000; // Bit 6 toggled.
     pub const FLAG_UTF8: u16                            = 0b0000_1000_0000_0000; // Bit 11 toggled.
-    pub const FLAG_CENTRAL_DIRECTORY_ECNRYPTION: u16    = 0b0010_0000_0000_0000; // Bit 13 toggled.
+    pub const FLAG_CENTRAL_DIRECTORY_ENCRYPTION: u16    = 0b0010_0000_0000_0000; // Bit 13 toggled.
 }
