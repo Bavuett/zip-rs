@@ -25,6 +25,10 @@ impl LocalFileHeadersOffsetsFactory {
             // EOF reached before "size" bytes were read (shouldn't normally happen if
             // "size" was computed correctly, but guards against an infinite loop instead
             // of scanning stale buffer contents.
+            //
+            // // EOF reached before "size" bytes were read (shouldn't normally happen if
+            // "size" was computed correctly, but guards against an infinite loop instead
+            // of scanning stale buffer contents.
             if bytes_read == 0 {
                 break;
             }
