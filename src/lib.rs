@@ -51,4 +51,37 @@ mod tests {
 
         assert_eq!(flags.as_u16_le(), 8);
     }
+
+    #[test]
+    /*
+     * LocalFileHeadersOffsetsFactory reads the file 256 bytes at a time. This test builds a
+     * buffer where the PK\x03\x04 signature straddles two reads (the entry starts at offset
+     * 254, so bytes 254-255 land in the first 256-byte chunk and bytes 256-257 land at the
+     * start of the second one), to guard against the offset computation regressing to an
+     * in-buffer index that can underflow across a read boundary.
+     */
+    fn local_file_headers_offsets_factory_signature_split_across_buffer_boundary() {
+        use crate::factories::local_file_headers_offsets::LocalFileHeadersOffsetsFactory;
+        use std::fs::{self, File};
+        use std::io::BufReader;
+
+        let mut data: Vec<u8> = vec![0u8; 512];
+        data[254] = 0x50;
+        data[255] = 0x4B;
+        data[256] = 0x03;
+        data[257] = 0x04;
+
+        let path = std::env::temp_dir().join("zip_rs_test_split_signature.bin");
+        fs::write(&path, &data).expect("Could not write test file");
+
+        let file = File::open(&path).expect("Could not open test file");
+        let mut reader = BufReader::new(file);
+
+        let result = LocalFileHeadersOffsetsFactory::from(&mut reader, data.len() as u64)
+            .expect("Could not compute local file header offsets");
+
+        fs::remove_file(&path).expect("Could not remove test file");
+
+        assert_eq!(result, vec![254, 512]);
+    }
 }
