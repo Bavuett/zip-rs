@@ -1,8 +1,7 @@
 use crate::{
     archive::{entry::Entry, Archive},
     factories::{
-        entries::EntriesFactory,
-        local_file_headers_offsets::LocalFileHeadersOffsetsFactory,
+        entries::EntriesFactory, local_file_headers_offsets::LocalFileHeadersOffsetsFactory,
     },
     utils::validation::ValidationUtilities,
 };
@@ -41,16 +40,17 @@ impl Archive {
 
         file.read(&mut buffer).expect("Error!");
 
-        let local_file_headers_offsets: Vec<usize> = LocalFileHeadersOffsetsFactory::from(
-            &mut file, 
-            size
-        ).expect("Could not get Headers!");
+        let local_file_headers_offsets: Vec<usize> =
+            LocalFileHeadersOffsetsFactory::from(&mut file, size).expect("Could not get Headers!");
 
         println!("Local File Headers: {:?}", local_file_headers_offsets);
 
         for &local_file_header_offset in &local_file_headers_offsets {
-            let offsets_as_iter_ref: &mut std::slice::Iter<'_, usize> = &mut local_file_headers_offsets.iter();
-            let index: usize = offsets_as_iter_ref.position(|&current_offset| current_offset == local_file_header_offset).unwrap();
+            let offsets_as_iter_ref: &mut std::slice::Iter<'_, usize> =
+                &mut local_file_headers_offsets.iter();
+            let index: usize = offsets_as_iter_ref
+                .position(|&current_offset| current_offset == local_file_header_offset)
+                .unwrap();
             let local_file_headers_offsets_length: usize = local_file_headers_offsets.len();
 
             if index < local_file_headers_offsets_length - 1 {

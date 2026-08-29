@@ -1,5 +1,5 @@
-use crate::utils::validation::ValidationUtilities;
 use crate::utils::constants::ConstantValues;
+use crate::utils::validation::ValidationUtilities;
 
 use std::fs::File;
 use std::io::{BufReader, Read};
@@ -21,11 +21,11 @@ impl ValidationUtilities {
         Ok(false)
     }
 
-    pub fn is_zip_entry(buffer: &Vec<u8>) -> bool {    
+    pub fn is_zip_entry(buffer: &Vec<u8>) -> bool {
         if buffer.len() < 4 {
             return false;
         };
-        
+
         if buffer[0..4] == ConstantValues::ZIP_SIGNATURE {
             return true;
         }

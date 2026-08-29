@@ -2,25 +2,34 @@ use crate::archive::{entry::Entry, flags::Flags};
 use crate::factories::{entries::EntriesFactory, flags::FlagsFactory};
 use crate::traits::validatable::Validatable;
 
-use std::io::{BufReader, Read, Seek, SeekFrom};
 use std::fs::File;
+use std::io::{BufReader, Read, Seek, SeekFrom};
 
 impl EntriesFactory {
-    pub fn from(file: &mut BufReader<File>, offset: usize, next_offset: usize) -> Result<Entry, std::io::Error> {
+    pub fn from(
+        file: &mut BufReader<File>,
+        offset: usize,
+        next_offset: usize,
+    ) -> Result<Entry, std::io::Error> {
         _ = match file.seek(SeekFrom::Start(offset as u64)) {
             Ok(_) => (),
-            Err(error) => return Err(error)
+            Err(error) => return Err(error),
         };
-        
-        println!("\n \n[GENERATING ENTRY]\nOffset: {}, Next Offset: {}, Operation: {:?}", offset, next_offset, next_offset - offset);
-        
+
+        println!(
+            "\n \n[GENERATING ENTRY]\nOffset: {}, Next Offset: {}, Operation: {:?}",
+            offset,
+            next_offset,
+            next_offset - offset
+        );
+
         let mut buffer: Vec<u8> = vec![0; next_offset - offset];
 
         println!("Vec has been declared with capacity: {}", buffer.len());
 
         _ = match file.read(&mut buffer) {
             Ok(_) => (),
-            Err(error) => return Err(error)
+            Err(error) => return Err(error),
         };
 
         println!("Buffer inside Entries Factory: {:?}", buffer);
@@ -28,16 +37,21 @@ impl EntriesFactory {
         if !buffer.is_zip() {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidData,
-                format!("Buffer starting at offset {} is not a valid Local File Header Offset", offset),
-            ))
+                format!(
+                    "Buffer starting at offset {} is not a valid Local File Header Offset",
+                    offset
+                ),
+            ));
         }
 
         let flags: Flags = match FlagsFactory::from(&buffer) {
             Ok(result) => result,
-            Err(_error ) => return Err(std::io::Error::new(
-                std::io::ErrorKind::InvalidData, 
-                format!("Could not determine flags."),
-            ))
+            Err(_error) => {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    format!("Could not determine flags."),
+                ))
+            }
         };
 
         Ok(Entry {

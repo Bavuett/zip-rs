@@ -8,7 +8,9 @@ pub trait Validatable {
 
 impl Validatable for Vec<u8> {
     fn is_zip(&self) -> bool {
-        if self.len() < 4 { return false; }
+        if self.len() < 4 {
+            return false;
+        }
         self[0..4] == ConstantValues::ZIP_SIGNATURE
     }
 }

@@ -3,7 +3,7 @@ use crate::factories::flags::FlagsFactory;
 
 impl FlagsFactory {
     pub fn from(buffer: &Vec<u8>) -> Result<Flags, std::io::Error> {
-        let mut flags: Flags =  Flags::new();
+        let mut flags: Flags = Flags::new();
 
         flags.set_central_directory_encryption(&buffer)?;
         flags.set_encrypted(&buffer)?;
@@ -15,8 +15,10 @@ impl FlagsFactory {
         flags.set_utf8(&buffer)?;
 
         println!(
-            "Flags as u16: [{:?}], which equals to Bytes: [{:?}].\nAs Data Structure: [{:?}]", 
-            flags.as_u16_le(), format!("{:016b}", flags.as_u16_le()), flags
+            "Flags as u16: [{:?}], which equals to Bytes: [{:?}].\nAs Data Structure: [{:?}]",
+            flags.as_u16_le(),
+            format!("{:016b}", flags.as_u16_le()),
+            flags
         );
 
         Ok(flags)
