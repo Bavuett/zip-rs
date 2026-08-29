@@ -1,12 +1,11 @@
 use crate::archive::{entry::Entry, flags::Flags};
-use crate::factories::{entries::EntriesFactory, flags::FlagsFactory};
 use crate::traits::validatable::Validatable;
 
 use std::fs::File;
 use std::io::{BufReader, Read, Seek, SeekFrom};
 
-impl EntriesFactory {
-    pub fn from(
+impl Entry {
+    pub fn from_reader(
         file: &mut BufReader<File>,
         offset: usize,
         next_offset: usize,
@@ -32,7 +31,7 @@ impl EntriesFactory {
             Err(error) => return Err(error),
         };
 
-        println!("Buffer inside Entries Factory: {:?}", buffer);
+        println!("Buffer inside Entry::from_reader: {:?}", buffer);
 
         if !buffer.is_zip() {
             return Err(std::io::Error::new(
@@ -44,7 +43,7 @@ impl EntriesFactory {
             ));
         }
 
-        let flags: Flags = match FlagsFactory::from(&buffer) {
+        let flags: Flags = match Flags::from_buffer(&buffer) {
             Ok(result) => result,
             Err(_error) => {
                 return Err(std::io::Error::new(

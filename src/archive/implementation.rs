@@ -1,9 +1,6 @@
 use crate::{
-    archive::{entry::Entry, Archive},
-    factories::{
-        entries::EntriesFactory, local_file_headers_offsets::LocalFileHeadersOffsetsFactory,
-    },
-    utils::validation::ValidationUtilities,
+    archive::{entry::Entry, local_file_headers_offsets, Archive},
+    traits::validatable::Validatable,
 };
 
 use std::io::{BufReader, Read, Seek, SeekFrom};
@@ -21,7 +18,7 @@ impl Archive {
 
         let mut entries: Vec<Entry> = Vec::new();
 
-        let is_zip: bool = match ValidationUtilities::is_zip_file(&mut file) {
+        let is_zip: bool = match file.is_zip_stream() {
             Ok(result) => result,
             Err(error) => return Err(error),
         };
@@ -41,7 +38,7 @@ impl Archive {
         file.read(&mut buffer).expect("Error!");
 
         let local_file_headers_offsets: Vec<usize> =
-            LocalFileHeadersOffsetsFactory::from(&mut file, size).expect("Could not get Headers!");
+            local_file_headers_offsets::find(&mut file, size).expect("Could not get Headers!");
 
         println!("Local File Headers: {:?}", local_file_headers_offsets);
 
@@ -66,7 +63,7 @@ impl Archive {
                     0
                 };
 
-                let entry: Entry = match EntriesFactory::from(
+                let entry: Entry = match Entry::from_reader(
                     &mut file,
                     local_file_header_offset,
                     local_file_headers_offsets[next_index],

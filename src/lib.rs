@@ -1,11 +1,10 @@
 pub mod archive;
-pub mod factories;
 pub mod traits;
 pub mod utils;
 
 #[cfg(test)]
 mod tests {
-    use crate::{archive::flags::Flags, factories::flags::FlagsFactory};
+    use crate::archive::flags::Flags;
 
     const BUFFER_AS_ARR: [u8; 256] = [
         80, 75, 3, 4, 20, 0, 8, 0, 8, 0, 238, 105, 6, 91, 0, 0, 0, 0, 8, 0, 8, 0, 238, 105, 6, 91,
@@ -45,23 +44,23 @@ mod tests {
      * For context about the ZIP General Purpose Bit Flags, see the PK ZIP Specification (APPNOTE.txt), which can be found at
      * https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
      */
-    fn flags_factory() {
+    fn flags_from_buffer() {
         let buffer: Vec<u8> = BUFFER_AS_ARR.to_vec();
-        let flags: Flags = FlagsFactory::from(&buffer).expect("Could not generate flags");
+        let flags: Flags = Flags::from_buffer(&buffer).expect("Could not generate flags");
 
         assert_eq!(flags.as_u16_le(), 8);
     }
 
     #[test]
     /*
-     * LocalFileHeadersOffsetsFactory reads the file 256 bytes at a time. This test builds a
+     * local_file_headers_offsets::find reads the file 256 bytes at a time. This test builds a
      * buffer where the PK\x03\x04 signature straddles two reads (the entry starts at offset
      * 254, so bytes 254-255 land in the first 256-byte chunk and bytes 256-257 land at the
      * start of the second one), to guard against the offset computation regressing to an
      * in-buffer index that can underflow across a read boundary.
      */
-    fn local_file_headers_offsets_factory_signature_split_across_buffer_boundary() {
-        use crate::factories::local_file_headers_offsets::LocalFileHeadersOffsetsFactory;
+    fn local_file_headers_offsets_signature_split_across_buffer_boundary() {
+        use crate::archive::local_file_headers_offsets;
         use std::fs::{self, File};
         use std::io::BufReader;
 
@@ -77,11 +76,16 @@ mod tests {
         let file = File::open(&path).expect("Could not open test file");
         let mut reader = BufReader::new(file);
 
-        let result = LocalFileHeadersOffsetsFactory::from(&mut reader, data.len() as u64)
+        let result = local_file_headers_offsets::find(&mut reader, data.len() as u64)
             .expect("Could not compute local file header offsets");
 
         fs::remove_file(&path).expect("Could not remove test file");
 
         assert_eq!(result, vec![254, 512]);
+    }
+
+    #[test]
+    fn compression_method() {
+        
     }
 }
