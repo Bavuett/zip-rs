@@ -1,6 +1,6 @@
-mod hour;
-mod second;
-mod minute;
+pub mod hour;
+pub mod minute;
+pub mod second;
 
 pub trait Timeable {
     fn set(&mut self, value: u8);
