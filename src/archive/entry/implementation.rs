@@ -1,3 +1,4 @@
+use crate::archive::compression_method::CompressionMethod;
 use crate::archive::{entry::Entry, flags::Flags};
 use crate::traits::validatable::Validatable;
 
@@ -53,10 +54,21 @@ impl Entry {
             }
         };
 
+        let compression_method: CompressionMethod = match CompressionMethod::try_from(&buffer) {
+            Ok(result) => result,
+            Err(_error) => {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    format!("Could not determine flags"),
+                ))
+            }
+        };
+
         Ok(Entry {
             offset,
             bytes: buffer,
             flags: flags,
+            compression_method: compression_method,
         })
     }
 }
