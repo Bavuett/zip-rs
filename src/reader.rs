@@ -48,4 +48,16 @@ impl<'a> Lexer<'a> {
 
         Ok(())
     }
+
+    // Read the bytes as an array, by passing how big it is going to be at compilation time by using a parameter.
+    pub fn read_array<const N: usize>(&mut self) -> Result<[u8; N], ZipError> {
+        let mut array: [u8; N] = [0u8; N];
+        array.copy_from_slice(self.read_bytes(N)?);
+
+        Ok(array)
+    }
+
+    pub fn read_u8(&mut self) -> Result<u8, ZipError> {
+        Ok(self.read_array::<1>()?[0])
+    }
 }
