@@ -57,7 +57,15 @@ impl<'a> Lexer<'a> {
         Ok(array)
     }
 
-    pub fn read_u8(&mut self) -> Result<u8, ZipError> {
-        Ok(self.read_array::<1>()?[0])
+    pub fn read_u8_le(&mut self) -> Result<u8, ZipError> {
+        Ok(u8::from_le_bytes(self.read_array::<1>()?))
+    }
+
+    pub fn read_u16_le(&mut self) -> Result<u16, ZipError> {
+        Ok(u16::from_le_bytes(self.read_array::<2>()?))
+    }
+
+    pub fn read_u32_le(&mut self) -> Result<u32, ZipError> {
+        Ok(u32::from_le_bytes(self.read_array::<4>()?))
     }
 }
