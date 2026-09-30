@@ -82,6 +82,6 @@ impl<'a> Lexer<'a> {
             });
         }
 
-        Ok((true))
+        Ok(true)
     }
 }
