@@ -21,7 +21,6 @@ impl<'a> Parser<'a> {
         // A ZIP File may have a final comment that is max 65535 bytes long (0xFFFF).
         // So we know that the signature is has to be located in the last 65KB, more
         // or less.
-        let max_comment_size = 0xFFFF;
         let max_offset: usize = 22 + 0xFFFF;
 
         let search_limit: usize = if file_size > max_offset {
