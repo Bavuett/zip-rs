@@ -74,7 +74,7 @@ impl<'a> Lexer<'a> {
 
         let got: u32 = self.read_u32_le()?;
 
-        if found != expected {
+        if got != expected {
             return Err(ZipError::BadSignature {
                 offset,
                 got,
