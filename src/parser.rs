@@ -10,6 +10,7 @@ impl<'a> Parser<'a> {
             reader: Reader::new(bytes),
         }
     }
+
     pub fn is_valid_zip(&mut self) -> Result<bool, ZipError> {
         let file_size = self.reader.length();
 
@@ -47,5 +48,34 @@ impl<'a> Parser<'a> {
         }
 
         Ok(false)
+    }
+
+    pub fn find_eocd(&mut self) -> Result<(), ZipError> {
+        let file_size = self.reader.length();
+
+        let max_offset: usize = 22 + 0xFFFF;
+
+        let search_limit: usize = if file_size > max_offset {
+            file_size - max_offset
+        } else {
+            0
+        };
+
+        for pos in (search_limit..=(file_size - 22)).rev() {
+            self.reader.seek(pos)?;
+
+            let signature: u32 = self.reader.read_u32_le()?;
+
+            if signature == 0x06054b50 {
+                return Ok(());
+            }
+        }
+
+        // Didn't find anyting. Let's use BadSignature.
+        Err(ZipError::BadSignature {
+            offset: 0,
+            expected: 0x06054b50,
+            got: 0,
+        })
     }
 }
