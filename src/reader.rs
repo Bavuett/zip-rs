@@ -1,11 +1,11 @@
 use crate::error::ZipError;
 
-pub struct Lexer<'a> {
+pub struct Reader<'a> {
     data: &'a [u8],
     pos: usize,
 }
 
-impl<'a> Lexer<'a> {
+impl<'a> Reader<'a> {
     pub fn new(data: &'a [u8]) -> Self {
         Self { data, pos: 0 }
     }
@@ -83,5 +83,9 @@ impl<'a> Lexer<'a> {
         }
 
         Ok(true)
+    }
+
+    pub fn length(&mut self) -> usize {
+        self.data.len()
     }
 }
