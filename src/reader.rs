@@ -68,4 +68,20 @@ impl<'a> Lexer<'a> {
     pub fn read_u32_le(&mut self) -> Result<u32, ZipError> {
         Ok(u32::from_le_bytes(self.read_array::<4>()?))
     }
+
+    pub fn expect_signature(&mut self, expected: u32) -> Result<bool, ZipError> {
+        let offset: usize = self.pos;
+
+        let got: u32 = self.read_u32_le()?;
+
+        if found != expected {
+            return Err(ZipError::BadSignature {
+                offset,
+                got,
+                expected,
+            });
+        }
+
+        Ok((true))
+    }
 }
