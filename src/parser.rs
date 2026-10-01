@@ -92,4 +92,16 @@ impl<'a> Parser<'a> {
 
         Ok(compression_method)
     }
+
+    pub fn get_file_modification_time(&mut self) -> Result<u16, ZipError> {
+        self.reader.seek(0)?;
+
+        self.reader.expect_signature(0x04034b50)?;
+
+        self.reader.skip(6);
+
+        let file_modification_time: u16 = self.reader.read_u16_le()?;
+
+        Ok(file_modification_time)
+    }
 }
