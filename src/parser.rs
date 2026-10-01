@@ -80,4 +80,16 @@ impl<'a> Parser<'a> {
 
         Ok(general_purpose_bit_flags)
     }
+
+    pub fn get_compression_method(&mut self) -> Result<u16, ZipError> {
+        self.reader.seek(0)?;
+
+        self.reader.expect_signature(0x04034b50)?;
+
+        self.reader.skip(4)?;
+
+        let compression_method: u16 = self.reader.read_u16_le()?;
+
+        Ok(compression_method)
+    }
 }
