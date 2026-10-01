@@ -29,7 +29,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    pub fn get_end_of_central_directory(&mut self) -> Result<EndOfCentralDirectory, ZipError> {
+    pub fn get_end_of_central_directory(&mut self) -> Result<EndOfCentralDirectory<'a>, ZipError> {
         let file_size = self.reader.length();
 
         // A ZIP File may have a final comment that is max 65535 bytes long (0xFFFF).
