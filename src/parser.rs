@@ -1,7 +1,7 @@
 use crate::{
     error::ZipError,
     reader::Reader,
-    spec::{CentralDirectory, EndOfCentralDirectory, LocalFileHeader},
+    spec::{CentralDirectory, CentralDirectoryHeader, EndOfCentralDirectory, LocalFileHeader},
 };
 
 pub struct Parser<'a> {
@@ -68,11 +68,61 @@ impl<'a> Parser<'a> {
         Ok(local_file_header)
     }
 
-    pub fn get_central_directory(&mut self) -> Result<CentralDirectory<'a>, ZipError> {
-        let end_of_central_directory: EndOfCentralDirectory =
-            self.get_end_of_central_directory()?;
+    pub fn get_central_directory_header(&mut self) -> Result<CentralDirectoryHeader<'a>, ZipError> {
+        self.reader.expect_signature(0x02014b50)?;
 
-        
+        let version_made_by: u16 = self.reader.read_u16_le()?;
+        let version_needed: u16 = self.reader.read_u16_le()?;
+        let general_purpose_bit_flags: u16 = self.reader.read_u16_le()?;
+        let compression_method: u16 = self.reader.read_u16_le()?;
+        let file_modification_time: u16 = self.reader.read_u16_le()?;
+        let file_modification_date: u16 = self.reader.read_u16_le()?;
+        let crc32: u32 = self.reader.read_u32_le()?;
+        let compressed_size: u32 = self.reader.read_u32_le()?;
+        let uncompressed_size: u32 = self.reader.read_u32_le()?;
+        let file_name_length: u16 = self.reader.read_u16_le()?;
+        let extra_field_length: u16 = self.reader.read_u16_le()?;
+        let file_comment_length: u16 = self.reader.read_u16_le()?;
+        let disk_number_start: u16 = self.reader.read_u16_le()?;
+        let internal_file_attributes: u16 = self.reader.read_u16_le()?;
+        let external_file_attributes: u16 = self.reader.read_u16_le()?;
+        let local_header_relative_offset: u32 = self.reader.read_u32_le()?;
+
+        let file_name_bytes: &'a [u8] = self.reader.read_bytes(file_name_length as usize)?;
+        let file_name: &'a str = match std::str::from_utf8(file_name_bytes) {
+            Ok(file_name) => file_name,
+            Err(_) => return Err(ZipError::InvalidUtf8),
+        };
+
+        let extra_field: &'a [u8] = self.reader.read_bytes(extra_field_length as usize)?;
+
+        let file_comment_bytes: &'a [u8] = self.reader.read_bytes(extra_field_length as usize)?;
+        let file_comment: &'a str = match std::str::from_utf8(file_comment_bytes) {
+            Ok(file_comment) => file_comment,
+            Err(_) => return Err(ZipError::InvalidUtf8),
+        };
+
+        Ok(CentralDirectoryHeader {
+            version_made_by,
+            version_needed,
+            general_purpose_bit_flags,
+            compression_method,
+            file_modification_time,
+            file_modification_date,
+            crc32,
+            compressed_size,
+            uncompressed_size,
+            file_name_length,
+            extra_field_length,
+            file_comment_length,
+            disk_number_start,
+            internal_file_attributes,
+            external_file_attributes,
+            local_header_relative_offset,
+            file_name,
+            extra_field,
+            file_comment,
+        })
     }
 
     pub fn get_end_of_central_directory(&mut self) -> Result<EndOfCentralDirectory<'a>, ZipError> {
