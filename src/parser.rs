@@ -68,4 +68,16 @@ impl<'a> Parser<'a> {
 
         Ok(version)
     }
+
+    pub fn get_general_purpose_bit_flags(&mut self) -> Result<u16, ZipError> {
+        self.reader.seek(0)?;
+
+        self.reader.expect_signature(0x04034b50)?;
+
+        self.reader.skip(2)?;
+
+        let general_purpose_bit_flags: u16 = self.reader.read_u16_le()?;
+
+        Ok(general_purpose_bit_flags)
+    }
 }
