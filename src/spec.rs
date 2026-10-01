@@ -42,7 +42,7 @@ impl<'a> LocalFileHeader<'a> {
     }
 }
 
-pub struct CentralDirectory<'a> {
+pub struct CentralDirectoryHeader<'a> {
     pub version_made_by: u16,
     pub version_needed: u16,
     pub general_purpose_bit_flags: u16,
@@ -62,6 +62,52 @@ pub struct CentralDirectory<'a> {
     pub file_name: &'a str,
     pub extra_field: &'a [u8],
     pub file_comment: &'a str,
+}
+
+impl<'a> CentralDirectoryHeader<'a> {
+    pub fn new(
+        version_made_by: u16,
+        version_needed: u16,
+        general_purpose_bit_flags: u16,
+        compression_method: u16,
+        file_modification_time: u16,
+        file_modification_date: u16,
+        crc32: u32,
+        compressed_size: u32,
+        uncompressed_size: u32,
+        file_name_length: u16,
+        extra_field_length: u16,
+        file_comment_length: u16,
+        disk_number_start: u16,
+        internal_file_attributes: u16,
+        external_file_attributes: u16,
+        relative_offset_of_local_header: u32,
+        file_name: &'a str,
+        extra_field: &'a [u8],
+        file_comment: &'a str,
+    ) -> Self {
+        Self {
+            version_made_by,
+            version_needed,
+            general_purpose_bit_flags,
+            compression_method,
+            file_modification_time,
+            file_modification_date,
+            crc32,
+            compressed_size,
+            uncompressed_size,
+            file_name_length,
+            extra_field_length,
+            file_comment_length,
+            disk_number_start,
+            internal_file_attributes,
+            external_file_attributes,
+            relative_offset_of_local_header,
+            file_name,
+            extra_field,
+            file_comment,
+        }
+    }
 }
 
 pub struct EndOfCentralDirectory<'a> {

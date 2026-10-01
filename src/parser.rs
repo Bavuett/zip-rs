@@ -1,7 +1,7 @@
 use crate::{
     error::ZipError,
     reader::Reader,
-    spec::{EndOfCentralDirectory, LocalFileHeader},
+    spec::{CentralDirectory, EndOfCentralDirectory, LocalFileHeader},
 };
 
 pub struct Parser<'a> {
@@ -66,6 +66,13 @@ impl<'a> Parser<'a> {
         );
 
         Ok(local_file_header)
+    }
+
+    pub fn get_central_directory(&mut self) -> Result<CentralDirectory<'a>, ZipError> {
+        let end_of_central_directory: EndOfCentralDirectory =
+            self.get_end_of_central_directory()?;
+
+        
     }
 
     pub fn get_end_of_central_directory(&mut self) -> Result<EndOfCentralDirectory<'a>, ZipError> {
