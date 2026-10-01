@@ -8,4 +8,5 @@ pub enum ZipError {
         expected: u32,
         got: u32,
     },
+    InvalidUtf8,
 }

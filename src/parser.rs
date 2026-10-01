@@ -57,4 +57,43 @@ impl<'a> Parser<'a> {
             got: 0,
         })
     }
+
+    pub fn get_local_file_header(&mut self) -> Result<LocalFileHeader<'a>, ZipError> {
+        self.reader.seek(0)?;
+
+        self.reader.expect_signature(0x04034b50)?;
+
+        let version_needed: u16 = self.reader.read_u16_le()?;
+        let general_purpose_bit_flags: u16 = self.reader.read_u16_le()?;
+        let compression_method: u16 = self.reader.read_u16_le()?;
+        let file_modification_time: u16 = self.reader.read_u16_le()?;
+        let file_modification_date: u16 = self.reader.read_u16_le()?;
+        let checksum_crc32: u32 = self.reader.read_u32_le()?;
+        let compressed_size: u32 = self.reader.read_u32_le()?;
+        let uncompressed_size: u32 = self.reader.read_u32_le()?;
+        let file_name_length: u16 = self.reader.read_u16_le()?;
+        let extra_field_length: u16 = self.reader.read_u16_le()?;
+
+        let file_name_bytes: &[u8] = self.reader.read_bytes(file_name_length as usize)?;
+        let file_name: &str = match std::str::from_utf8(file_name_bytes) {
+            Ok(file_name) => file_name,
+            Err(_) => return Err(ZipError::InvalidUtf8),
+        };
+
+        let local_file_header: LocalFileHeader<'a> = LocalFileHeader::new(
+            version_needed,
+            general_purpose_bit_flags,
+            compression_method,
+            file_modification_time,
+            file_modification_date,
+            checksum_crc32,
+            compressed_size,
+            uncompressed_size,
+            file_name_length,
+            extra_field_length,
+            file_name,
+        );
+
+        Ok(local_file_header)
+    }
 }
