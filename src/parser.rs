@@ -1,7 +1,7 @@
 use crate::{
     error::ZipError,
     reader::Reader,
-    spec::{CentralDirectory, CentralDirectoryHeader, EndOfCentralDirectory, LocalFileHeader},
+    spec::{CentralDirectoryHeader, EndOfCentralDirectory, LocalFileHeader},
 };
 
 pub struct Parser<'a> {
