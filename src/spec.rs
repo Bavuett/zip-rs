@@ -30,8 +30,8 @@ impl<'a> LocalFileHeader<'a> {
             version_needed,
             general_purpose_bit_flags,
             compression_method,
-            file_modification_date,
             file_modification_time,
+            file_modification_date,
             checksum_crc32,
             compressed_size,
             uncompressed_size,
@@ -40,6 +40,28 @@ impl<'a> LocalFileHeader<'a> {
             file_name,
         }
     }
+}
+
+pub struct CentralDirectory<'a> {
+    pub version_made_by: u16,
+    pub version_needed: u16,
+    pub general_purpose_bit_flags: u16,
+    pub compression_method: u16,
+    pub file_modification_time: u16,
+    pub file_modification_date: u16,
+    pub crc32: u32,
+    pub compressed_size: u32,
+    pub uncompressed_size: u32,
+    pub file_name_length: u16,
+    pub extra_field_length: u16,
+    pub file_comment_length: u16,
+    pub disk_number_start: u16,
+    pub internal_file_attributes: u16,
+    pub external_file_attributes: u16,
+    pub relative_offset_of_local_header: u32,
+    pub file_name: &'a str,
+    pub extra_field: &'a [u8],
+    pub file_comment: &'a str,
 }
 
 pub struct EndOfCentralDirectory<'a> {
