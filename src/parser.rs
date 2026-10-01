@@ -57,4 +57,15 @@ impl<'a> Parser<'a> {
             got: 0,
         })
     }
+
+    pub fn get_version(&mut self) -> Result<u16, ZipError> {
+        self.reader.seek(0)?;
+
+        // Expecting a Signature sends us forward 4 bytes. We may read the version.
+        self.reader.expect_signature(0x04034b50)?;
+
+        let version: u16 = self.reader.read_u16_le()?;
+
+        Ok(version)
+    }
 }
