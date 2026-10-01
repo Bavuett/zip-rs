@@ -12,17 +12,6 @@ pub struct LocalFileHeader<'a> {
     pub file_name: &'a str,
 }
 
-pub struct EndOfCentralDirectory<'a> {
-    pub disk_number: u16,
-    pub disk_with_central_directory: u16,
-    pub total_entries_on_this_disk: u16,
-    pub total_entries: u16,
-    pub size_of_central_directory: u32,
-    pub start_of_central_directory_offset: u32,
-    pub archive_comment_length: u16,
-    pub archive_comment: &'a str,
-}
-
 impl<'a> LocalFileHeader<'a> {
     pub fn new(
         version_needed: u16,
@@ -49,6 +38,41 @@ impl<'a> LocalFileHeader<'a> {
             file_name_length,
             extra_field_length,
             file_name,
+        }
+    }
+}
+
+pub struct EndOfCentralDirectory<'a> {
+    pub disk_number: u16,
+    pub disk_with_central_directory: u16,
+    pub total_entries_on_this_disk: u16,
+    pub total_entries_in_central_directory: u16,
+    pub size_of_central_directory: u32,
+    pub start_of_central_directory_offset: u32,
+    pub archive_comment_length: u16,
+    pub archive_comment: &'a str,
+}
+
+impl<'a> EndOfCentralDirectory<'a> {
+    pub fn new(
+        disk_number: u16,
+        disk_with_central_directory: u16,
+        total_entries_on_this_disk: u16,
+        total_entries_in_central_directory: u16,
+        size_of_central_directory: u32,
+        start_of_central_directory_offset: u32,
+        archive_comment_length: u16,
+        archive_comment: &'a str,
+    ) -> Self {
+        Self {
+            disk_number,
+            disk_with_central_directory,
+            total_entries_on_this_disk,
+            total_entries_in_central_directory,
+            size_of_central_directory,
+            start_of_central_directory_offset,
+            archive_comment_length,
+            archive_comment,
         }
     }
 }

@@ -1,4 +1,8 @@
-use crate::{error::ZipError, reader::Reader, spec::LocalFileHeader};
+use crate::{
+    error::ZipError,
+    reader::Reader,
+    spec::{EndOfCentralDirectory, LocalFileHeader},
+};
 
 pub struct Parser<'a> {
     pub reader: Reader<'a>,
@@ -25,7 +29,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    pub fn get_end_of_central_directory(&mut self) -> Result<(), ZipError> {
+    pub fn get_end_of_central_directory(&mut self) -> Result<EndOfCentralDirectory, ZipError> {
         let file_size = self.reader.length();
 
         // A ZIP File may have a final comment that is max 65535 bytes long (0xFFFF).
@@ -46,7 +50,31 @@ impl<'a> Parser<'a> {
             let signature: u32 = self.reader.read_u32_le()?;
 
             if signature == 0x06054b50 {
-                return Ok(());
+                let disk_number: u16 = self.reader.read_u16_le()?;
+                let disk_with_central_directory: u16 = self.reader.read_u16_le()?;
+                let total_entries_on_this_disk: u16 = self.reader.read_u16_le()?;
+                let total_entries_in_central_directory: u16 = self.reader.read_u16_le()?;
+                let size_of_central_directory: u32 = self.reader.read_u32_le()?;
+                let start_of_central_directory_offset: u32 = self.reader.read_u32_le()?;
+                let archive_comment_length: u16 = self.reader.read_u16_le()?;
+
+                let archive_comments_bytes: &[u8] =
+                    self.reader.read_bytes(archive_comment_length as usize)?;
+                let archive_comment: &'a str = match std::str::from_utf8(archive_comments_bytes) {
+                    Ok(archive_comment) => archive_comment,
+                    Err(_) => return Err(ZipError::InvalidUtf8),
+                };
+
+                return Ok(EndOfCentralDirectory {
+                    disk_number,
+                    disk_with_central_directory,
+                    total_entries_on_this_disk,
+                    total_entries_in_central_directory,
+                    size_of_central_directory,
+                    start_of_central_directory_offset,
+                    archive_comment_length,
+                    archive_comment,
+                });
             }
         }
 
