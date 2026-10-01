@@ -19,13 +19,13 @@ impl<'a> Parser<'a> {
             return Ok(false);
         }
 
-        match self.get_eocd() {
+        match self.get_end_of_central_directory() {
             Ok(_) => Ok(true),
             Err(_) => Ok(false),
         }
     }
 
-    pub fn get_eocd(&mut self) -> Result<(), ZipError> {
+    pub fn get_end_of_central_directory(&mut self) -> Result<(), ZipError> {
         let file_size = self.reader.length();
 
         // A ZIP File may have a final comment that is max 65535 bytes long (0xFFFF).
