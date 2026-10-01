@@ -14,6 +14,10 @@ impl<'a> Reader<'a> {
         self.pos
     }
 
+    pub fn length(&mut self) -> usize {
+        self.data.len()
+    }
+
     pub fn seek(&mut self, pos: usize) -> Result<(), ZipError> {
         if pos > self.data.len() {
             return Err(ZipError::UnexpectedEof {
@@ -83,9 +87,5 @@ impl<'a> Reader<'a> {
         }
 
         Ok(true)
-    }
-
-    pub fn length(&mut self) -> usize {
-        self.data.len()
     }
 }
